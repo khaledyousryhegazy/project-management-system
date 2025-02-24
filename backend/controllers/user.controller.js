@@ -53,30 +53,34 @@ const register = async (req, res) => {
 
 // login
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const existUser = await User.findOne({ email });
+    const existUser = await User.findOne({ email });
 
-  if (existUser === null) {
-    res.status(409).json({ message: "user not exist" });
+    if (existUser === null) {
+      res.status(409).json({ message: "user not exist" });
+    }
+
+    const isMatch = existUser.comparePassword(password);
+
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ message: "password is not correct please try again" });
+    }
+
+    // token here
+    var token = jwt.sign(
+      { userId: existUser._id, username: existUser.username, email: email },
+      process.env.JWT_SECRET,
+      { expiresIn: "90d" }
+    );
+
+    res.status(200).json({ success: true, token: token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  const isMatch = existUser.comparePassword(password);
-
-  if (!isMatch) {
-    return res
-      .status(401)
-      .json({ message: "password is not correct please try again" });
-  }
-
-  // token here
-  var token = jwt.sign(
-    { userId: existUser._id, username: existUser.username, email: email },
-    process.env.JWT_SECRET,
-    { expiresIn: "90d" }
-  );
-
-  res.status(200).json({ success: true, token: token });
 };
 
 module.exports = { getAllUsers, register, login };
