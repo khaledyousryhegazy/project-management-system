@@ -13,9 +13,11 @@ app.use(cors());
 // routes
 // imports
 const userRoutes = require("./routes/user.routes");
+const projectRoutes = require("./routes/project.routes");
 
 // paths
 app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.get("/", (req, res) => {
   res.send({
