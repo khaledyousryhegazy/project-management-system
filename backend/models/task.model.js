@@ -11,7 +11,11 @@ const taskSchema = new Schema(
     },
     dueDate: { type: Date, required: true },
     assignTo: { type: Schema.Types.ObjectId, ref: "users" },
-    listOf: { type: String, required: true },
+    listOf: {
+      type: String,
+      required: true,
+      enum: ["ToDo", "InProgress", "Done"],
+    },
     project: { type: Schema.Types.ObjectId, ref: "projects", required: true },
   },
   { timestamps: true }
