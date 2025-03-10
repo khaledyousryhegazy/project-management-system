@@ -1,5 +1,8 @@
+const Project = require("../models/project.model");
 const Task = require("../models/task.model");
 const User = require("../models/user.model");
+
+const { io } = require("../server");
 
 // 1️⃣ createTask
 const createTask = async (req, res) => {
@@ -24,6 +27,11 @@ const createTask = async (req, res) => {
     });
 
     await newTask.save();
+
+    io.to(assignTo).emit("notification", {
+      message: `You have been assigned a new task: ${title}`,
+      taskId: newTask._id,
+    });
 
     return res.status(201).json({
       success: true,
@@ -99,6 +107,11 @@ const updateTask = async (req, res) => {
 
     const updatedTask = await Task.findByIdAndUpdate(id, data, { new: true });
 
+    io.to(task.assignTo).emit("notification", {
+      message: `Task updated: ${updatedTask.title}`,
+      taskId: updatedTask._id,
+    });
+
     return res.status(200).json({
       success: true,
       data: updatedTask,
@@ -121,6 +134,11 @@ const deleteTask = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Task not found" });
     }
+
+    io.to(task.assignTo).emit("notification", {
+      message: `Task Deleted: ${task.title}`,
+      taskId: task._id,
+    });
 
     return res.status(200).json({
       success: true,
@@ -207,6 +225,11 @@ const assignTaskToUser = async (req, res) => {
     task.assignTo = userId;
     await task.save();
 
+    io.to(userId).emit("notification", {
+      message: `Task ${task.title} assigned to you`,
+      taskId: task._id,
+    });
+
     if (!task) {
       return res
         .status(404)
@@ -241,6 +264,11 @@ const removeAssignedUser = async (req, res) => {
         message: "No user is assigned to this task",
       });
     }
+
+    io.to(task.assignTo).emit("notification", {
+      message: `You removed from: ${task.title}`,
+      taskId: task._id,
+    });
 
     task.assignTo = null;
     await task.save();
@@ -280,8 +308,16 @@ const moveTaskToAnotherList = async (req, res) => {
         .json({ success: false, message: "Task not found" });
     }
 
+    const project = await Project.findById(task.project);
+    const owner = project.owner;
+
     task.listOf = listOf;
     await task.save();
+
+    io.to(owner).emit("notification", {
+      message: `Task ${task.title} Moved To ${task.listOf} By ${task.assignTo}`,
+      taskId: task._id,
+    });
 
     return res.status(200).json({
       success: true,

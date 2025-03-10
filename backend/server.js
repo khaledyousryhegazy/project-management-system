@@ -4,6 +4,19 @@ const cors = require("cors");
 const express = require("express");
 const app = express();
 
+// socket.io setup for notifications
+const { Server } = require("socket.io");
+const { createServer } = require("node:http");
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+
+module.exports = { io, server };
+
 const connectDB = require("./connection/connectDB");
 
 // middlewares
@@ -29,6 +42,19 @@ app.get("/", (req, res) => {
 });
 
 connectDB(); // connect database function
+
+// Socket.io connection
+io.on("connection", (socket) => {
+  console.log("✅ A user connected:", socket.id);
+
+  // socket.emit("notification", {
+  //   message: "Welcome! Socket.io is working ✅",
+  // });
+
+  socket.on("disconnect", () => {
+    console.log("❌ A user disconnected:", socket.id);
+  });
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`app is listen on ${process.env.PORT}`);

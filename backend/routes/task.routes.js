@@ -16,8 +16,8 @@ const router = express.Router();
 const isAuth = require("../middlewares/auth.middleware");
 const isAdmin = require("../middlewares/isAdmin.middleware");
 
-router.post("/", isAuth, isAdmin, createTask); //Admin Only
-router.get("/", isAuth, getAllTasks);
+router.post("/create", isAuth, isAdmin, createTask); //Admin Only
+router.get("/all", isAuth, getAllTasks);
 router.get("/:id", isAuth, getTaskById);
 router.put("/:id", isAuth, isAdmin, updateTask); //Admin Only
 router.delete("/:id", isAuth, isAdmin, deleteTask); //Admin Only

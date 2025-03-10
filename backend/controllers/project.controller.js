@@ -349,7 +349,7 @@ const updateProjectStatus = async (req, res) => {
     }
 
     status = status.trim().toLowerCase();
-    const validStatuses = ["inprogress", "completed", "canceled"];
+    const validStatuses = ["inProgress", "completed", "canceled"];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
