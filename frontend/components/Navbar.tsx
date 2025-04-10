@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-import logo from "../assets/icons/logo.svg";
-import avatar from "../assets/icons/avatar.svg";
-import notification from "../assets/icons/notification.svg";
+import logo from "@/assets/icons/logo.svg";
+import avatar from "@/assets/icons/avatar.svg";
+import notification from "@/assets/icons/notification.svg";
 
 export default function Navbar() {
     return (
