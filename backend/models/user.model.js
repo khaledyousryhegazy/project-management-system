@@ -15,6 +15,7 @@ const userSchema = new Schema(
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     avatar: { type: String, default: "uploads/avatar.png" },
+    // position:{type:String,required:true}, [frontend,backend,fullstack,.....]
   },
   { timestamps: true }
 );

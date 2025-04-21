@@ -3,7 +3,9 @@ const jwt = require("jsonwebtoken");
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.headers["Authorization"] || req.headers["authorization"];
+    const token =
+      req.headers["authorization"].split(" ")[1] ||
+      req.headers["Authorization"].split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
@@ -18,7 +20,7 @@ const auth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    if (err.name === "TokenExpiredError") {
+    if (error.name === "TokenExpiredError") {
       res.status(401).json({ error: "Token has expired" });
     } else {
       res.status(401).json({ error: "Invalid token" });

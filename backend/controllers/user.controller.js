@@ -59,11 +59,11 @@ const login = async (req, res) => {
 
     const existUser = await User.findOne({ email });
 
-    if (existUser === null) {
-      res.status(409).json({ message: "user not exist" });
+    if (!existUser) {
+      return res.status(404).json({ message: "User does not exist" });
     }
 
-    const isMatch = existUser.comparePassword(password);
+    const isMatch = await existUser.comparePassword(password);
 
     if (!isMatch) {
       return res
