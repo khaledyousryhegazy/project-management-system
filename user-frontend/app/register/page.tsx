@@ -27,13 +27,14 @@ export default function Register() {
                         <h1 className="font-bold text-4xl">Welcome !</h1>
                         <p className="font-semibold text-sm mt-2">Welcome ! Please enter your details.</p>
                     </div>
-                    
+
                     <form
                         onSubmit={ ( e ) => {
                             e.preventDefault();
                             const formData = new FormData( e.currentTarget );
                             handleRegister( formData );
                         } }
+
                         className="flex flex-col gap-5">
                         <div className="space-y-5 min-w-[300px]">
                             {/* Avatar */ }

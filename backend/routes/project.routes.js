@@ -10,6 +10,7 @@ const {
   addMemberToProject,
   removeMemberFromProject,
   updateProjectStatus,
+  getProjectByMember,
 } = require("../controllers/project.controller");
 
 const auth = require("../middlewares/auth.middleware");
@@ -20,11 +21,12 @@ const router = express.Router();
 // about projects
 router.get("/all", auth, getAllProjects);
 router.get("/:id", auth, getProjectById);
+router.get("/user/:memberId", auth, getProjectByMember);
 router.post("/create", auth, isAdmin, createProject); // ⬅️ Admin
 router.patch("/:id", auth, isAdmin, updateProject); // ⬅️ Admin
 router.delete("/:id", auth, isAdmin, deleteProject); // ⬅️ Admin
 
-// tasks of the project [not tested yet]
+// tasks of the project
 router.post("/:projectId/tasks", auth, addTaskToProject);
 router.delete("/:projectId/tasks", auth, removeTaskFromProject);
 

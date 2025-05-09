@@ -75,7 +75,9 @@ const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const project = await Project.findById(id);
+    const project = await Project.findById(id)
+      .populate("members")
+      .populate("tasks");
 
     if (!project) {
       return res.status(404).json({
@@ -85,6 +87,33 @@ const getProjectById = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: project });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// 🔍 getProjectByMember
+const getProjectByMember = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+
+    if (!memberId) {
+      return res.status(400).json({
+        success: false,
+        message: "Member ID is required.",
+      });
+    }
+
+    const projects = await Project.find({ members: memberId });
+
+    if (projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No projects found for this member.",
+      });
+    }
+
+    res.status(200).json({ success: true, data: projects });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -388,6 +417,7 @@ module.exports = {
   createProject,
   getAllProjects,
   getProjectById,
+  getProjectByMember,
   updateProject,
   deleteProject,
   addTaskToProject,

@@ -29,7 +29,7 @@ export default function Navbar() {
     return (
         <div className="flex justify-between fixed left-0 top-0 right-0 z-50 shadow-md py-2 px-6  bg-white">
             <div className="flex items-center gap-2">
-                <Image src={ logo } width={ 35 } alt="logo of the AProjectO" />
+                <Image src={ logo } width={ 35 } height={ 35 } alt="logo of the AProjectO" />
                 <h2 className="text-lg font-semibold">AProjectO</h2>
             </div>
 
