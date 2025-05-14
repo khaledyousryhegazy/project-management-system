@@ -77,7 +77,13 @@ const getProjectById = async (req, res) => {
 
     const project = await Project.findById(id)
       .populate("members")
-      .populate("tasks");
+      .populate("owner")
+      .populate({
+        path: "tasks",
+        populate: {
+          path: "assignTo",
+        },
+      });
 
     if (!project) {
       return res.status(404).json({
@@ -104,7 +110,9 @@ const getProjectByMember = async (req, res) => {
       });
     }
 
-    const projects = await Project.find({ members: memberId });
+    const projects = await Project.find({ members: memberId }).populate(
+      "owner"
+    );
 
     if (projects.length === 0) {
       return res.status(404).json({
@@ -180,7 +188,7 @@ const deleteProject = async (req, res) => {
 const addTaskToProject = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const { taskId } = req.body; //
+    const { taskId } = req.body;
 
     if (!projectId || !taskId) {
       return res.status(400).json({

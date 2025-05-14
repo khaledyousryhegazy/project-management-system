@@ -20,6 +20,27 @@ export const getProjectByMember = async (memberId: string) => {
   }
 };
 
+// Get project by id
+export const getProjectById = async (projectId: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/projects/${projectId}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw new Error(
+        err.response?.data?.message || "Fetch getProjectByMember failed"
+      );
+    }
+    throw new Error("Something went wrong");
+  }
+};
+
 // add task to the project
 export const addTaskToProject = async ({
   taskId,

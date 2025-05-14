@@ -44,7 +44,7 @@ export const useLogin = () => {
       password: "",
     });
     Cookies.set("token", token, { expires: 7 });
-    router.push("/v1/dashboard");
+    router.push("/v1/projects");
   };
 
   return { handleLogin, loading, loginErrors };

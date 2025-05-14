@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { IProject } from "@/interfaces/uiInterfaces";
 import {
   addTaskToProject,
+  getProjectById,
   getProjectByMember,
   removeTaskFromProject,
 } from "@/services/projectsServices";
@@ -15,6 +16,12 @@ type Action = {
     success: boolean;
     error: string | null;
     projects: IProject[];
+  }>;
+
+  getProjectById: (projectId: string) => Promise<{
+    success: boolean;
+    error: string | null;
+    project: IProject | null;
   }>;
 
   addTaskToProject: ({
@@ -54,13 +61,34 @@ export const projectsStore = create<State & Action>((set) => ({
       set({ loading: false });
       return { success: true, error: null, projects: res.data };
     } catch (error) {
-      console.log("🚀 ~ getUserProjects ~ error: in zustand store", error);
       set({ loading: false });
       return {
         success: false,
-        error: "Error fetching projects",
+        error: error instanceof Error ? error.message : String(error),
         projects: [],
       };
+    }
+  },
+
+  getProjectById: async (projectId) => {
+    set({ loading: true });
+    try {
+      const res = await getProjectById(projectId);
+
+      if (!res) {
+        set({ loading: false });
+        return {
+          success: false,
+          error: "Error fetching project",
+          project: null,
+        };
+      }
+
+      set({ loading: false });
+      return { success: true, error: null, project: res.data };
+    } catch (error) {
+      const err = error instanceof Error ? error.message : String(error);
+      return { success: false, error: err, project: null };
     }
   },
 

@@ -13,7 +13,7 @@ export interface IProject {
   title: string;
   description: string;
   status: string;
-  owner: string;
+  owner: IUser;
   dueDate: string;
   members: IUser[];
   tasks: ITasks[];
@@ -24,7 +24,7 @@ export interface ITasks {
   title: string;
   description: string;
   status: string;
-  assignTo: string;
+  assignTo: IUser;
   dueDate: string;
   listOf: string;
   project: IProject;

@@ -28,6 +28,9 @@ const createTask = async (req, res) => {
 
     await newTask.save();
 
+    await addTaskToProject(project, newTask._id);
+    await addMemberToProject(project, newTask.assignTo);
+
     io.to(assignTo).emit("notification", {
       message: `You have been assigned a new task: ${title}`,
       taskId: newTask._id,
@@ -345,6 +348,62 @@ const getTasksByProject = async (req, res) => {
     return res.status(200).json({ success: true, data: tasks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const addTaskToProject = async (projectId, taskId) => {
+  try {
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return console.log("Project not found");
+    }
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return console.log("Task not found");
+    }
+
+    if (project.tasks.includes(taskId.toString())) {
+      return console.log("Task already exists in the project");
+    }
+
+    project.tasks.push(taskId);
+    await project.save();
+  } catch (error) {
+    return console.log("Error adding task to project:", error.message);
+  }
+};
+
+const addMemberToProject = async (projectId, userId) => {
+  try {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (project.members.includes(userId.toString())) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists in the project",
+      });
+    }
+
+    project.members.push(userId);
+    await project.save();
+  } catch (error) {
+    return console.log("Error adding member to project:", error.message);
   }
 };
 

@@ -1,17 +1,135 @@
-"use client"
+"use client";
 
-import { useParams } from 'next/navigation'
+import { LoadingSpinner } from "@/components/global/LoadingSpinner";
+import { IProject } from "@/interfaces/uiInterfaces";
+import { projectsStore } from "@/store/projectsStore";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import ideaIcon from "@/assets/icons/idea.svg";
+import arrowRight from "@/assets/icons/arrow-right.svg";
+import Image from "next/image";
+import moment from "moment";
 
 export default function SingleProject() {
-    const { _id } = useParams()
-    console.log( "🚀 ~ SingleProject ~ _id:", _id )
+    const { _id } = useParams();
+    const [ project, setProject ] = useState<IProject | null>();
+    const { loading, getProjectById } = projectsStore();
+
+    useEffect( () => {
+        const getData = async () => {
+            const res = await getProjectById( _id as string );
+            setProject( res.project );
+        };
+
+        getData();
+    }, [ _id, getProjectById ] );
 
     return (
-        <div>IDDDDD</div>
-    );
-}
+        <div>
+            { loading ? (
+                <LoadingSpinner />
+            ) : (
+                <>
+                    <div className="mb-10 flex items-center gap-3">
+                        <h1 className="font-bold text-xl lg:text-2xl">{ project?.title }</h1>
+                        <Image
+                            src={ `http://localhost:3001/uploads/${ project?.owner?.avatar }` }
+                            className="rounded-full border border-[#fff]"
+                            width={ 37 }
+                            height={ 37 }
+                            alt={ project?.owner?.username || "Owner" }
+                        />
+                        <Image src={ arrowRight } alt="arrowRight" />
 
-/*
-1- create service and state for get project by id
-2- create the ui and show the data
-*/
+                        <div className="flex items-center">
+                            { project?.members?.map( ( member ) => (
+                                <Image
+                                    key={ member._id }
+                                    src={ `http://localhost:3001/uploads/${ member.avatar }` }
+                                    className="rounded-full image-inside border-1 border-[#fff]"
+                                    width={ 37 }
+                                    height={ 37 }
+                                    alt={ member.username }
+                                />
+                            ) ) }
+                        </div>
+
+                        <span
+                            className={ `text-xs capitalize py-1 px-3 font-semibold rounded-full ${ project?.status === "canceled"
+                                ? "bg-red-300 text-red-700"
+                                : project?.status === "inprogress"
+                                    ? "bg-blue-300 text-blue-700"
+                                    : project?.status === "completed"
+                                        ? "bg-green-300 text-green-700"
+                                        : ""
+                                }` }
+                        >
+                            { project?.status }
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col gap-5">
+                        { project?.tasks?.map( ( task ) => (
+                            <div
+                                key={ task._id }
+                                className="flex items-center justify-between bg-white shadow-md rounded-lg p-4"
+                            >
+                                <div className="flex items-center gap-3 md:gap-16">
+                                    <div className="flex items-center gap-3">
+                                        <Image src={ ideaIcon } alt={ task.title } />
+                                        <div>
+                                            <h1 className="font-semibold">{ task.title }</h1>
+                                            <div className="flex items-center gap-3 md:gap-5">
+                                                <p className="text-sm text-[#555252]">{ task.description }</p>
+
+                                                <span
+                                                    className={ `text-xs capitalize py-1 px-3 font-semibold rounded-full ${ task.listOf === "ToDo"
+                                                        ? "bg-red-300 text-red-700"
+                                                        : task.listOf === "InProgress"
+                                                            ? "bg-blue-300 text-blue-700"
+                                                            : task.listOf === "Done"
+                                                                ? "bg-green-300 text-green-700"
+                                                                : ""
+                                                        }` }
+                                                >
+                                                    { task.listOf }
+                                                </span>
+
+                                                <span
+                                                    className={ `text-xs capitalize py-1 px-3 font-semibold rounded-full ${ task.status === "canceled"
+                                                        ? "bg-red-300 text-red-700"
+                                                        : task.status === "inprogress"
+                                                            ? "bg-blue-300 text-blue-700"
+                                                            : task.status === "completed"
+                                                                ? "bg-green-300 text-green-700"
+                                                                : ""
+                                                        }` }
+                                                >
+                                                    { task.status }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span className="text-[#D62222] uppercase text-sm font-semibold">
+                                            { moment( project.dueDate ).format( "DD MMMM YYYY" ) }
+                                        </span>
+                                    </div>
+                                </div>
+                                <Image
+                                    src={ `http://localhost:3001/uploads/${ task.assignTo.avatar }` }
+                                    className="rounded-full"
+                                    width={ 36 }
+                                    height={ 36 }
+                                    alt={ task.title }
+                                />
+                            </div>
+                        ) ) }
+                    </div>
+                </>
+            ) }
+        </div>
+    );
+
+}
