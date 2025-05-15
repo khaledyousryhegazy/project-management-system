@@ -33,9 +33,9 @@ export default function Navbar() {
                 <h2 className="text-lg font-semibold">AProjectO</h2>
             </div>
 
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-2 md:gap-5">
 
-                <Image src={ notification } width={ 35 } height={ 35 } alt="notification" />
+                <Image src={ notification } width={ 30 } height={ 30 } alt="notification" />
 
                 <div className="flex items-center gap-2">
                     <div className="text-end">

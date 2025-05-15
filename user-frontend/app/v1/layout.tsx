@@ -5,9 +5,9 @@ export default function DashboardLayout( { children }: { children: React.ReactNo
     return (
         <div>
             <Navbar />
-            <div className="flex gap-5 h-full min-h-screen ">
+            <div className="flex h-full min-h-screen">
                 <Sidebar />
-                <main className="container bg-[#F0F6FF] pt-20 md:!px-6">
+                <main className="bg-[#F0F6FF] pt-20 md:!px-6 w-full">
 
                     { children }
                 </main>
