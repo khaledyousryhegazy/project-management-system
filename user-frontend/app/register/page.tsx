@@ -14,6 +14,9 @@ export default function Register() {
     const toggleVisibility = () => setIsVisible( ( prevState ) => !prevState );
 
     const { loading, handleRegister, registerErrors } = useRegister();
+    console.log( "🚀 ~ Register ~ process.env.NEXT_PUBLIC_BASE_URL:", process.env.NEXT_PUBLIC_BASE_URL )
+
+
 
     return (
         <div className="bg-[#F5F5F5]">
@@ -111,3 +114,4 @@ export default function Register() {
         </div>
     );
 }
+
